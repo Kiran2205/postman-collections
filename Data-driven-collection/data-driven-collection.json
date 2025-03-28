@@ -1,0 +1,138 @@
+{
+	"info": {
+		"_postman_id": "9354ce1a-c1c9-4973-9fdd-6027152ef327",
+		"name": "data-driven-collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17608392"
+	},
+	"item": [
+		{
+			"name": "create-a-user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Verify user data for each user created\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.name).to.eql(pm.iterationData.get(\"name\"));",
+							"    pm.expect(jsonData.gender).to.eql(pm.iterationData.get(\"gender\"));",
+							"    pm.expect(jsonData.status).to.eql(pm.iterationData.get(\"status\"));",
+							"",
+							"    //How I validate random email generated is correct.",
+							"    //fetch the email",
+							"    const rawJsonBody = pm.request.body.raw;",
+							"    //Now convert raw 'json string' to 'JS object'.",
+							"    const requestBodyJsObject = JSON.parse(rawJsonBody);",
+							"    console.log(\"Expected email is : \"+requestBodyJsObject.email);",
+							"    pm.expect(jsonData.email).to.eql(requestBodyJsObject.email);",
+							"});",
+							"",
+							"pm.test(\"verify ID value is not null\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.id).to.be.not.null;",
+							"});",
+							"",
+							"const response = pm.response.json();",
+							"const userId= response.id;",
+							"pm.variables.set(\"user_id\", userId);",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gorest-token-id}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "//There is no excel support in postman, \n//either we have to use .csv or .json\n\n//name, gender and status are fetched as test-data from  csv file : users-test-data.csv\n//and while parameterizing test data fetched from .csv file, we need to have the same \n//column name as provided in .csv file and enclosed with double opening and closing\n//curly braces.\n{\n    \"name\": \"{{name}}\",\n    \"gender\": \"{{gender}}\",\n    \"email\": \"{{$randomEmail}}\",\n    \"status\": \"{{status}}\"\n}\n\n\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{gorest-base-url}}/public/v2/users",
+					"host": [
+						"{{gorest-base-url}}"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update-users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Check whether status is updated for all users\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.status).to.eql(pm.iterationData.get(\"newstatus\"));",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{gorest-token-id}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"status\": \"{{newstatus}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{gorest-base-url}}/public/v2/users/{{user_id}}",
+					"host": [
+						"{{gorest-base-url}}"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users",
+						"{{user_id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
