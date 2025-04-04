@@ -1,0 +1,110 @@
+pipeline{
+    
+    agent any
+    
+    stages{
+        
+        stage("Build"){
+            steps{
+                echo "Build the war"
+            }
+        }
+        
+        stage("Deploy to QA"){
+            steps{
+                echo "Deploy to QA"
+            }
+        }
+        
+    
+        stage("Checkout"){
+            steps{
+                git branch: 'main', url: 'https://github.com/Kiran2205/postman-collections.git'
+            }
+        }
+        
+        stage("Pull docker image"){
+            parallel{
+                stage('Pull data driven collection test image'){
+                    steps{
+                        sh 'docker pull docker020510/data-driven-test-collection:1.3'
+                    }
+                }
+                stage('Pull generate-token as-pre-requisite collection test image'){
+                    steps{
+                        sh 'docker pull docker020510/generate-token-as-pre-requisite-coll-test:1.3'
+                    }
+                }
+            }
+        }
+        
+        stage('Prepare newman directory in the custom path with respective collections') {
+            parallel {
+                stage('create newman directory for data driven collection to copy test results') {
+                    steps {
+                        sh 'mkdir -p $(pwd)/../Data-driven-collection/docker-results/newman'
+                    }
+                }
+                stage('create newman directory for generate token as pre requisite collection to copy test results') {
+                    steps {
+                        sh 'mkdir -p $(pwd)/../Generate-token-as-pre-req-collection/docker-results/newman'
+                    }
+                }
+            }
+        }
+        
+        stage("Run API test cases from collections in parallel"){
+            parallel {
+                stage('Run Data driven collection tests') {
+                    steps{
+                        sh 'docker run -v $(pwd)/../Data-driven-collection/docker-results/newman:/app/results/ docker020510/data-driven-test-collection:1.3'
+                    }
+                }
+                stage('Run generate token as pre requiste collection tests') {
+                    steps{
+                        sh 'docker run -v $(pwd)/../Generate-token-as-pre-req-collection/docker-results/newman:/app/results/ docker020510/generate-token-as-pre-requisite-coll-test:1.3'
+                    }
+                }
+            }
+        }
+        
+        stage("Publish HTML Extra report"){
+            parallel {
+                stage('Publish Data driven test collection report') {
+                    steps{
+                        publishHTML([
+                            allowMissing: false,
+                            alwaysLinkToLastBuild: false,
+                            keepAll: true,
+                            reportDir: 'docker-results/newman',
+                            reportFiles: 'data-driven-test-report.html',
+                            reportName: 'Data-driven-test-collection-html-report',
+                            reportTitles: 'HTML Extra Data Driven API Test Report'
+                        ])
+                    }
+                }
+                stage('Publish generate token as pre requiste test collection report') {
+                    steps{
+                        publishHTML([
+                            allowMissing: false,
+                            alwaysLinkToLastBuild: false,
+                            keepAll: true,
+                            reportDir: 'docker-results/newman',
+                            reportFiles: 'generate-token-as-pre-requisite-test-report.html',
+                            reportName: 'Generate-token-as-pre-requisite-test-collection-html-report',
+                            reportTitles: 'HTML Extra Generate Token as Pre requiste API Test Report'
+                        ])
+                    }
+                }
+            }
+            
+        }
+        
+        stage("Deploy to PROD"){
+            steps{
+                echo "Deploying to PROD"
+            }
+        }
+        
+    }
+}
