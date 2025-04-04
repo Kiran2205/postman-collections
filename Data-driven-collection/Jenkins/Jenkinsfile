@@ -1,0 +1,58 @@
+pipeline{
+    agent any
+    
+    stages{
+        
+        stage("Build"){
+            steps{
+                echo "Build the war"
+            }
+        }
+        
+        stage("Deploy to QA"){
+            steps{
+                echo "Deploy to QA"
+            }
+        }
+        
+    
+        stage("Checkout"){
+            steps{
+                git branch: 'main', url: 'https://github.com/Kiran2205/postman-collections.git'
+            }
+        }
+        
+        stage("Pull docker image"){
+            steps{
+                sh 'docker pull docker020510/data-driven-test-collection:1.1'
+            }
+        }
+        
+        stage("Run API test cases"){
+            steps{
+                sh 'docker run -v $(pwd)/docker-results/newman:/app/results/ docker020510/data-driven-test-collection:1.1'
+            }
+        }
+        
+        stage("Publish HTML Extra report"){
+            steps{
+                publishHTML([
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: false,
+                    keepAll: true,
+                    reportDir: 'docker-results/newman',
+                    reportFiles: 'data-driven-test-report.html',
+                    reportName: 'HTML Extra API Report',
+                    reportTitles: 'HTML Extra Data Driven API Test Report'
+                ])
+            }
+        }
+        
+        stage("Deploy to PROD"){
+            steps{
+                echo "Deploying to PROD"
+            }
+        }
+        
+    }
+}
