@@ -42,12 +42,12 @@ pipeline{
             parallel {
                 stage('create newman directory for data driven collection to copy test results') {
                     steps {
-                        sh 'mkdir -p $(pwd)/../Data-driven-collection/docker-results/newman'
+                        sh 'mkdir -p $(pwd)/Data-driven-collection/docker-results/newman'
                     }
                 }
                 stage('create newman directory for generate token as pre requisite collection to copy test results') {
                     steps {
-                        sh 'mkdir -p $(pwd)/../Generate-token-as-pre-req-collection/docker-results/newman'
+                        sh 'mkdir -p $(pwd)/Generate-token-as-pre-req-collection/docker-results/newman'
                     }
                 }
             }
