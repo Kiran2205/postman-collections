@@ -57,12 +57,12 @@ pipeline{
             parallel {
                 stage('Run Data driven collection tests') {
                     steps{
-                        sh 'docker run -v $(pwd)/../Data-driven-collection/docker-results/newman:/app/results/ docker020510/data-driven-test-collection:1.3'
+                        sh 'docker run -v $(pwd)/Data-driven-collection/docker-results/newman:/app/results/ docker020510/data-driven-test-collection:1.3'
                     }
                 }
                 stage('Run generate token as pre requiste collection tests') {
                     steps{
-                        sh 'docker run -v $(pwd)/../Generate-token-as-pre-req-collection/docker-results/newman:/app/results/ docker020510/generate-token-as-pre-requisite-coll-test:1.3'
+                        sh 'docker run -v $(pwd)/Generate-token-as-pre-req-collection/docker-results/newman:/app/results/ docker020510/generate-token-as-pre-requisite-coll-test:1.3'
                     }
                 }
             }
@@ -76,7 +76,7 @@ pipeline{
                             allowMissing: false,
                             alwaysLinkToLastBuild: false,
                             keepAll: true,
-                            reportDir: 'docker-results/newman',
+                            reportDir: 'Data-driven-collection/docker-results/newman',
                             reportFiles: 'data-driven-test-report.html',
                             reportName: 'Data-driven-test-collection-html-report',
                             reportTitles: 'HTML Extra Data Driven API Test Report'
@@ -89,7 +89,7 @@ pipeline{
                             allowMissing: false,
                             alwaysLinkToLastBuild: false,
                             keepAll: true,
-                            reportDir: 'docker-results/newman',
+                            reportDir: 'Generate-token-as-pre-req-collection/docker-results/newman',
                             reportFiles: 'generate-token-as-pre-requisite-test-report.html',
                             reportName: 'Generate-token-as-pre-requisite-test-collection-html-report',
                             reportTitles: 'HTML Extra Generate Token as Pre requiste API Test Report'
