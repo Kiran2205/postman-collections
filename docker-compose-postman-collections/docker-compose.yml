@@ -4,9 +4,11 @@ services:
   data-driven-collection:
     image: docker020510/data-driven-test-collection:1.3
     volumes:
-      - ./Data-driven-collection/docker-results/newman:/app/results
-      
+      - ./../Data-driven-collection/docker-results/newman:/app/results
+
+# We are './../' to go to root directory and then navigate to the respective collection folder and create
+# a 'docker-results' folder inside 'newman' folder to store the results of the collection run.
   generate-token-as-pre-req-collection:
     image: docker020510/generate-token-as-pre-requisite-coll-test:1.3
     volumes:
-      - ./Generate-token-as-pre-req-collection/docker-results/newman:/app/results      
+      - ./../Generate-token-as-pre-req-collection/docker-results/newman:/app/results      
