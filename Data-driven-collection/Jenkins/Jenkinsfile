@@ -25,13 +25,13 @@ pipeline{
         
         stage("Pull docker image"){
             steps{
-                sh 'docker pull docker020510/data-driven-test-collection:1.1'
+                sh 'docker pull docker020510/data-driven-test-collection:1.3'
             }
         }
         
         stage("Run API test cases"){
             steps{
-                sh 'docker run -v $(pwd)/docker-results/newman:/app/results/ docker020510/data-driven-test-collection:1.1'
+                sh 'docker run -v $(pwd)/docker-results/newman:/app/results/ docker020510/data-driven-test-collection:1.3'
             }
         }
         
