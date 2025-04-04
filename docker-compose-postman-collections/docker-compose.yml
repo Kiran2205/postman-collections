@@ -7,7 +7,7 @@ services:
       - ./Data-driven-collection/docker-results/newman:/app/results
 
 services:
-  data-driven-collection:
+  generate-token-as-pre-req-collection:
     image: docker020510/generate-token-as-pre-requisite-coll-test:1.3
     volumes:
       - ./Generate-token-as-pre-req-collection/docker-results/newman:/app/results      
