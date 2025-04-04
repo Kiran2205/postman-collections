@@ -18,7 +18,8 @@ RUN mkdir -p /app/results
 
 # Copy your Postman collection, test data files and environment files to the working directory
 COPY data-driven-collection.json .
-COPY data-driven-collection-environment.json .
+# Instead of using '.' to indicate copying to the current directory, we can use '/app' to be more explicit.
+COPY data-driven-collection-environment.json /app 
 COPY test-data/users-test-data.csv .
 
 # Set the command to run Newman and execute your Postman collection
